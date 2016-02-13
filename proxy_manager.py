@@ -6,8 +6,8 @@ import string
 import os
 
 GLOBAL_LOCK = threading.Lock()
-SITES_ENABLED = '/etc/nginx/sites-enabled/'
-SITES_AVAILABLE = '/etc/nginx/sites-available/'
+SITES_ENABLED = '/etc/nginx/sites-enabled'
+SITES_AVAILABLE = '/etc/nginx/sites-available'
 CONFIG_FILE = """
 # WebSocket Proxy
 #
@@ -74,7 +74,7 @@ def generate_config_file(name, target_url):
 def save_config_file(file_name, content):
     try:
         GLOBAL_LOCK.acquire()
-        with open("{}/{}".format(SITES_ENABLED, file_name), 'w') as f_out:
+        with open("{}/{}".format(SITES_AVAILABLE, file_name), 'w') as f_out:
             f_out.write(content)
         os.system("ln -s {}/{} {}/{}".format(SITES_AVAILABLE, file_name, SITES_ENABLED, file_name))
     finally:
