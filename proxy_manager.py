@@ -37,7 +37,7 @@ server {
     }
 }
 """
-template = Template(CONFIG_FILE)
+template = jinja2.Template(CONFIG_FILE)
 PROXY_TABLE = {}
 
 def GenerateProxy(target_url):
