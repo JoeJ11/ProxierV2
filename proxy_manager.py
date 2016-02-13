@@ -38,17 +38,19 @@ server {
 }
 """
 template = Template(CONFIG_FILE)
+PROXY_TABLE = {}
 
 def GenerateProxy(target_url):
     name = random_string()
     while not check_availablity(name):
         name = random_string()
     config_file = generate_config_file(name, target_url)
-    save_config_file(target_url.replace(':','.'), config_file)
+    save_config_file(name, config_file)
+    PROXY_TABLE[target_url] = name
     return json.dumps({'proxy':name}, 200)
 
 def RemoveProxy(target_url):
-    file_name = target_url.replace(':','.')
+    file_name = PROXY_TABLE[target_url]
     try:
         GLOBAL_LOCK.acquire()
         os.system('rm {}/{}'.format(SITES_ENABLED, file_name))
@@ -58,12 +60,13 @@ def RemoveProxy(target_url):
     restart_nginx()
 
 def check_availablity(name):
-    GLOBAL_LOCK.acquire()
-    try:
-        flag = name in os.listdir(SITES_AVAILABLE)
-    finally:
-        GLOBAL_LOCK.release()
-    return flag
+    # GLOBAL_LOCK.acquire()
+    # try:
+    #     flag = name in os.listdir(SITES_AVAILABLE)
+    # finally:
+    #     GLOBAL_LOCK.release()
+    # return flag
+    return not name in [PROXY_TABLE[key] for key in PROXY_TABLE]
 
 def generate_config_file(name, target_url):
     return template.render(name=name, target_url=target_url)
