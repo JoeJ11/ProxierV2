@@ -47,7 +47,7 @@ def GenerateProxy(target_url):
     config_file = generate_config_file(name, target_url)
     save_config_file(name, config_file)
     PROXY_TABLE[target_url] = name
-    return json.dumps({'proxy':name}, 200)
+    return [json.dumps({'proxy':name}), 200]
 
 def RemoveProxy(target_url):
     file_name = PROXY_TABLE[target_url]
@@ -74,7 +74,7 @@ def generate_config_file(name, target_url):
 def save_config_file(file_name, content):
     try:
         GLOBAL_LOCK.acquire()
-        with open("{}/{}".format(SITES_ENABLED, file_name), 'r') as f_out:
+        with open("{}/{}".format(SITES_ENABLED, file_name), 'w') as f_out:
             f_out.write(content)
         os.system("ln -s {}/{} {}/{}".format(SITES_AVAILABLE, file_name, SITES_ENABLED, file_name))
     finally:

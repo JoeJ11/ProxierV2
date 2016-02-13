@@ -1,13 +1,15 @@
 import proxy_manager
 
 from flask import Flask
+from flask import request
+import flask
 app = Flask(__name__)
-
-@app.route("/create", methods=['POST'])
+app.debug = True
+@app.route("/", methods=['POST'])
 def create():
     target_url = request.form['target']
     proxy_addr, code = proxy_manager.GenerateProxy(target_url)
-    resp = make_response(proxy_addr, code)
+    resp = flask.make_response(proxy_addr, code)
     resp.headers['Content-Type'] = 'application/json'
     return resp
 
