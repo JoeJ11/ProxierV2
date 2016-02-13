@@ -41,11 +41,6 @@ server {
 template = jinja2.Template(CONFIG_FILE)
 PROXY_TABLE = {}
 
-def ServerUpdate():
-    while True:
-        restart_nginx()
-        time.sleep(1)
-
 def GenerateProxy(target_url):
     name = random_string()
     while not check_availablity(name):
@@ -53,6 +48,7 @@ def GenerateProxy(target_url):
     config_file = generate_config_file(name, target_url)
     save_config_file(name, config_file)
     PROXY_TABLE[target_url] = name
+    threading.Thread(target=restart_nginx).start()
     return [json.dumps({'proxy':name}), 200]
 
 def RemoveProxy(target_url):
@@ -63,7 +59,7 @@ def RemoveProxy(target_url):
         os.system('rm {}/{}'.format(SITES_AVAILABLE, file_name))
     finally:
         GLOBAL_LOCK.release()
-    # restart_nginx()
+    threading.Thread(target=restart_nginx).start()
 
 def check_availablity(name):
     # GLOBAL_LOCK.acquire()
@@ -87,6 +83,7 @@ def save_config_file(file_name, content):
         GLOBAL_LOCK.release()
 
 def restart_nginx():
+    time.sleep(1)
     try:
         GLOBAL_LOCK.acquire()
         os.system("service nginx restart")
