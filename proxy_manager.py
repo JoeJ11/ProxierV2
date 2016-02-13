@@ -4,6 +4,7 @@ import json
 import random
 import string
 import os
+import time
 
 GLOBAL_LOCK = threading.Lock()
 SITES_ENABLED = '/etc/nginx/sites-enabled'
@@ -40,6 +41,11 @@ server {
 template = jinja2.Template(CONFIG_FILE)
 PROXY_TABLE = {}
 
+def ServerUpdate():
+    while True:
+        restart_nginx()
+        time.sleep(1)
+
 def GenerateProxy(target_url):
     name = random_string()
     while not check_availablity(name):
@@ -57,7 +63,7 @@ def RemoveProxy(target_url):
         os.system('rm {}/{}'.format(SITES_AVAILABLE, file_name))
     finally:
         GLOBAL_LOCK.release()
-    restart_nginx()
+    # restart_nginx()
 
 def check_availablity(name):
     # GLOBAL_LOCK.acquire()

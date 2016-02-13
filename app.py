@@ -1,8 +1,13 @@
 import proxy_manager
-
+from threading import Thread
 from flask import Flask
 from flask import request
 import flask
+
+thread = Thread(target = proxy_manager)
+thread.daemon = True
+thread.start()
+
 app = Flask(__name__)
 app.debug = True
 @app.route("/", methods=['POST'])
