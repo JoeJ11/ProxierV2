@@ -53,7 +53,10 @@ def GenerateProxy(target_url):
     return [json.dumps({'proxy':name}), 200]
 
 def RemoveProxy(target_url):
-    file_name = PROXY_TABLE[target_url]
+    if PROXY_TABLE.has_key(target_url):
+        file_name = PROXY_TABLE[target_url]
+    else:
+        return
     try:
         GLOBAL_LOCK.acquire()
         os.system('rm {}/{}'.format(SITES_ENABLED, file_name))
