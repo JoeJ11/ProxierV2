@@ -18,7 +18,7 @@ def create():
 
 @app.route("/", methods=['GET'])
 def list():
-    return "List"
+    return json.dumps(proxy_manager.PROXY_TABLE)
 
 @app.route("/delete", methods=['POST'])
 def remove():

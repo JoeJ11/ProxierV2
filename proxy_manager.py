@@ -81,6 +81,9 @@ def generate_config_file(name, target_url):
 def save_config_file(file_name, content):
     try:
         GLOBAL_LOCK.acquire()
+        if file_name in os.listdir(SITES_AVAILABLE):
+            os.system('rm {}/{}'.format(SITES_AVAILABLE, file_name))
+            os.system('rm {}/{}'.format(SITES_ENABLED, file_name))
         with open("{}/{}".format(SITES_AVAILABLE, file_name), 'w') as f_out:
             f_out.write(content)
         os.system("ln -s {}/{} {}/{}".format(SITES_AVAILABLE, file_name, SITES_ENABLED, file_name))
